@@ -11,6 +11,7 @@ import YAML from 'yamljs'
 import * as api from '@exmpl/api/controllers'
 // import { expressDevLogger } from './express_dev_logger'
 import config from '@exmpl/config'
+import logger from '@exmpl/utils/logger'
 
 import {expressDevLogger} from '@exmpl/utils/express_dev_logger'
 
@@ -18,7 +19,7 @@ export async function createServer(): Promise<Express> {
   const yamlSpecFile = './config/openapi.yml'
   const apiDefinition = YAML.load(yamlSpecFile)
   const apiSummary = summarise(apiDefinition)
-  console.info(apiSummary)
+  logger.info(apiSummary)
  
   const server = express()
   // here we can intialize body/cookies parsers, connect logger, for example morgan
@@ -60,7 +61,7 @@ export async function createServer(): Promise<Express> {
   const connect = connector(api, apiDefinition, {
     onCreateRoute: (method: string, descriptor: any[]) => {
       descriptor.shift()
-      console.log(`${method}: ${descriptor.map((d: any) => d.name).join(', ')}`)
+      logger.verbose(`${method}: ${descriptor.map((d: any) => d.name).join(', ')}`)
     },
     security: {
       bearerAuth: api.auth
